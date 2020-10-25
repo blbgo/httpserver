@@ -1,0 +1,6 @@
+github.com/blbgo/general v0.1.0 h1:H8RPRLgqqc2OHCY1BK7yAzRTy2j3qM3YsnqqVITiHB4=
+github.com/blbgo/general v0.1.0/go.mod h1:A2ZPvWZlUUTB50b1nG7iRsLYFYBazkLFAnC2UzEzZU8=
+github.com/julienschmidt/httprouter v1.3.0 h1:U0609e9tgbseu3rBINet9P48AI/D3oJs4dN7jwJOQ1U=
+github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
+github.com/segmentio/ksuid v1.0.3 h1:FoResxvleQwYiPAVKe1tMUlEirodZqlqglIuFsdDntY=
+github.com/segmentio/ksuid v1.0.3/go.mod h1:/XUiZBD3kVx5SmUOl55voK5yeAbBNNIed+2O73XgrPE=
