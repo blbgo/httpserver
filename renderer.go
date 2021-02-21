@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/fs"
 	"net/http"
 )
 
@@ -21,12 +22,20 @@ type TemplateProvider interface {
 	Template() string
 }
 
+// TemplateFSProvider allows a template file system to be provided
+type TemplateFSProvider interface {
+	TemplateFS() (fs.FS, error)
+}
+
 type renderer struct {
 	*template.Template
 }
 
 // NewRenderer provides an implementation of the Renderer interface
-func NewRenderer(templateProvider []TemplateProvider) (Renderer, error) {
+func NewRenderer(
+	templateProvider []TemplateProvider,
+	templateFSProvider []TemplateFSProvider,
+) (Renderer, error) {
 	funcMap := template.FuncMap{
 		// The name "add" is what the function will be called in the template text.
 		"add": func(a int64, b int64) int64 {
@@ -39,11 +48,25 @@ func NewRenderer(templateProvider []TemplateProvider) (Renderer, error) {
 	t := template.New("base").Funcs(funcMap)
 	var err error
 	for _, v := range templateProvider {
-		t, err = t.Parse(v.Template())
+		templateStr := v.Template()
+		fmt.Println("Template provided by old TemplateProvider: ", templateStr[:25])
+		t, err = t.Parse(templateStr)
 		if err != nil {
 			return nil, err
 		}
 	}
+	for _, v := range templateFSProvider {
+		var fs fs.FS
+		fs, err = v.TemplateFS()
+		if err != nil {
+			return nil, err
+		}
+		t, err = t.ParseFS(fs, "*.gohtml")
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return renderer{Template: t}, nil
 }
 

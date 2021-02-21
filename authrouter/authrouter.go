@@ -7,6 +7,7 @@ import (
 	"github.com/blbgo/httpserver"
 )
 
+// CheckAuth interface checks if a request has the required auth
 type CheckAuth interface {
 	HasAuth(req *http.Request, required string) bool
 }
@@ -33,14 +34,20 @@ func (r *authRouter) AuthHandler(method, path, required string, handler http.Han
 	r.Handler(
 		method,
 		path,
-		http.HandlerFunc(
-			func(rw http.ResponseWriter, req *http.Request) {
-				if r.HasAuth(req, required) {
-					handler.ServeHTTP(rw, req)
-				} else {
-					http.NotFound(rw, req)
-				}
-			},
-		),
+		&authHandler{CheckAuth: r.CheckAuth, required: required, Handler: handler},
 	)
+}
+
+type authHandler struct {
+	CheckAuth
+	required string
+	http.Handler
+}
+
+func (r *authHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	if r.HasAuth(req, r.required) {
+		r.Handler.ServeHTTP(rw, req)
+	} else {
+		http.NotFound(rw, req)
+	}
 }
